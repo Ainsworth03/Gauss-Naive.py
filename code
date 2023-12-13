@@ -1,0 +1,62 @@
+import numpy as np
+import sympy as sp
+
+
+def coefficients_in(nvar, matrix):
+
+    for i in range(nvar) :
+        for j in range(nvar+1) :
+            if j < nvar  :
+                matrix[i][j] = float(input(( "Masukkan koefisien x" + str(j+1) + " pada persamaan ke " + str(i + 1) + ":  ")))
+            elif j == nvar :
+                matrix[i][j] = float(input(( "Masukkan hasil persamaan ke " + str(i + 1) + ":  ")))
+
+    print("\nMatriks awal :\n", matrix)       
+
+    return matrix
+
+def gaussnaif (nvar, matrix) : 
+
+    for i in range(nvar) : 
+        if matrix[i][i] == 0.0 :
+            raise ZeroDivisionError 
+        
+        for j in range(i+1, nvar) :
+            ratio = matrix[j][i] / matrix[i][i] 
+
+            for k in range(nvar+1) : 
+                matrix[j][k] = matrix[j][k] - ratio * matrix[i][k]
+        print("\nIterasi matriks :\n", matrix)
+
+    return matrix
+
+def substitusimundur(nvar, matrix, solutions) :
+
+    solutions[nvar-1] = matrix[nvar-1][nvar] / matrix[nvar-1][nvar-1]
+
+    for i in range(nvar-2,-1,-1) :
+        solutions[i] = matrix[i][nvar]
+
+        for j in range(i+1, nvar) :
+            solutions[i] = solutions[i] - matrix[i][j] * solutions[j]
+
+        solutions[i] = solutions[i] / matrix[i][i]
+    
+    return solutions
+
+try :
+    nvar = int(input("Masukkan banyak variabel : "))
+    matrix = np.zeros((nvar, nvar+1))
+    solution = np.zeros(nvar)
+    coefmatrx = coefficients_in(nvar, matrix)
+    gaussmatrx = gaussnaif(nvar, coefmatrx)
+    arrhasil = substitusimundur(nvar, gaussmatrx, solution)
+    print("\n\nMaka hasilnya adalah :")
+    for i in range(nvar) : 
+        print("x" + str(i+1) + "  =  " + str(arrhasil[i]) + "      ")
+
+except ValueError :
+    print("\nProgram Error : Masukkan nilai berupa integer untuk banyak variabel dan float untuk koefisien!\n")
+
+except ZeroDivisionError :
+    print("\nTerdeteksi pembagian dengan 0!, algoritma gauss naif mungkin tidak dapat digunakan untuk permasalahan ini\n")
